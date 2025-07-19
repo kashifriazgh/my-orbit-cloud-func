@@ -13,7 +13,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "firebase-admin": "^13.4.0"
+    "firebase-admin": "^13.4.0",
+    "moment": "^2.30.1",
+    "moment-timezone": "^0.6.0",
+    "node-cron": "^4.2.1"
   },
   "devDependencies": {
     "@types/node": "^24.0.15",
