@@ -17,7 +17,6 @@ export async function updateAllClients() {
     try {
       const { projectId, firebase } = client;
 
-      // Uniquely name each app
       const appName = `app-${projectId}`;
       const alreadyInitialized = getApps().find((app) => app.name === appName);
 
@@ -36,14 +35,19 @@ export async function updateAllClients() {
 
       const db = getFirestore(app);
 
-      // Update logic: Example → update a globalSettings doc
-      const now = new Date().toISOString();
-      await db
-        .collection('globalSettings')
-        .doc('checkedTime')
-        .set({ time: now }, { merge: true });
+      // Define the collection and doc
+      const collectionName = 'test-collection';
+      const docId = 'scheduled-task';
+      const currentTime = new Date().toISOString();
 
-      console.log(`✅ Updated ${client.clientName}`);
+      await db.collection(collectionName).doc(docId).set(
+        {
+          triggeredAt: currentTime,
+        },
+        { merge: true }
+      );
+
+      console.log(`✅ Updated ${client.clientName} at ${currentTime}`);
     } catch (error) {
       console.error(`❌ Error for ${client.clientName}`, error);
     }
