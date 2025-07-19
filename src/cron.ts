@@ -1,21 +1,12 @@
 import cron from 'node-cron';
 import moment from 'moment-timezone';
-import { updateAllClients } from './functions/updateClients';
 import { getMostFocusedTime } from './functions/getMostFocusedTime';
 
-cron.schedule('* * * * *', async () => {
+// 🕰 Runs every day at 9:15 PM Pakistan Time
+cron.schedule('15 25 * * *', async () => {
   const now = moment().tz('Asia/Karachi');
-  const currentTime = now.format('HH:mm');
-
-  console.log(`🕒 Current PKT time: ${currentTime}`);
-
-  if (now.hour() === 22 && now.minute() === 17) {
-    console.log('⏰ 10:17 PM PKT — running focused time analysis...');
-    await getMostFocusedTime();
-  }
-
-  // Example future condition:
-  // if (now.hour() === 10 && now.minute() === 0) {
-  //   await updateAllClients();
-  // }
+  console.log(
+    `⏰ ${now.format('HH:mm')} PKT — running focused time analysis...`
+  );
+  await getMostFocusedTime();
 });
