@@ -1,6 +1,6 @@
 import { initializeApp, cert, getApps } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
-import clients from '../clients.json';
+import clients from '../../clients.json';
 
 interface Client {
   projectId: string;

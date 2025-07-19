@@ -1,4 +1,4 @@
-import { updateAllClients } from './updateClients';
+import { updateAllClients } from './functions/updateClients';
 
 (async () => {
   console.log('🔄 Running scheduled update...');
