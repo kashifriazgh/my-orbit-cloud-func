@@ -9,8 +9,8 @@ cron.schedule('* * * * *', async () => {
 
   console.log(`🕒 Current PKT time: ${currentTime}`);
 
-  if (now.hour() === 22 && now.minute() === 16) {
-    console.log('⏰ It is 9:15 PM PKT — running focused time analysis...');
+  if (now.hour() === 22 && now.minute() === 17) {
+    console.log('⏰ 10:17 PM PKT — running focused time analysis...');
     await getMostFocusedTime();
   }
 
