@@ -1,17 +1,21 @@
 import cron from 'node-cron';
-import moment from 'moment-timezone';
 import { getMostFocusedTime } from './functions/getMostFocusedTime';
 
-cron.schedule('5 52 * * *', async () => {
-  const now = moment().tz('Asia/Karachi');
+// 🕰 Runs every day at 5:52 AM (server time — usually UTC unless set)
+cron.schedule('56 5 * * *', async () => {
+  const now = new Date();
+  const timeInKarachi = now.toLocaleTimeString('en-PK', {
+    timeZone: 'Asia/Karachi',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  });
 
-  if (!now.isValid()) {
-    console.error('❌ Invalid moment-timezone result — aborting task.');
-    return;
+  console.log(`⏰ ${timeInKarachi} PKT — running focused time analysis...`);
+
+  try {
+    await getMostFocusedTime();
+  } catch (err) {
+    console.error('🚨 Error running focused time task:', err);
   }
-
-  console.log(
-    `⏰ ${now.format('HH:mm')} PKT — running focused time analysis...`
-  );
-  await getMostFocusedTime();
 });
