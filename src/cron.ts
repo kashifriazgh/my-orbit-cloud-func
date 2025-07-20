@@ -1,27 +1,30 @@
 // cron.ts
 
 import cron from 'node-cron';
+import moment from 'moment-timezone';
 import { getMostFocusedTime } from './functions/getMostFocusedTime';
 
-cron.schedule('25 6 * * *', async () => {
-  const now = new Date();
-  const timeInKarachi = now.toLocaleTimeString('en-PK', {
-    timeZone: 'Asia/Karachi',
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: false,
-  });
+// Run every minute to check if it's exactly 6:25 AM PKT
+cron.schedule('* * * * *', async () => {
+  const now = moment().tz('Asia/Karachi');
+  const isTargetTime = now.hour() === 8 && now.minute() === 34;
 
-  console.log(`⏰ ${timeInKarachi} PKT — running focused time analysis...`);
-
-  try {
-    await getMostFocusedTime();
-    console.log('✅ Focused time task completed');
-  } catch (err) {
-    console.error('🚨 Error running focused time task:', err);
+  if (isTargetTime) {
+    console.log('⏰ It is 6:25 AM PKT — running focused time analysis...');
+    try {
+      await getMostFocusedTime();
+      console.log('✅ Focused time task completed');
+    } catch (err) {
+      console.error('🚨 Error running focused time task:', err);
+    }
+  } else {
+    console.log(`🕒 Current time in PKT: ${now.format('HH:mm')}`);
   }
 });
 
-// 👇 Add this to keep the Node.js process alive
-setInterval(() => {}, 1000 * 60 * 60); // Keep process alive for an hour
-console.log('✅ Cron job scheduler initialized and running...');
+// 👇 Keep the Node.js process alive
+setInterval(() => {}, 1000 * 60 * 60); // 1 hour
+
+console.log(
+  '✅ Cron job scheduler initialized and watching for 6:25 AM PKT...'
+);
