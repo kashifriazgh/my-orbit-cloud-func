@@ -88,7 +88,7 @@ export async function getMostFocusedTime() {
         hourStart: mostActiveHour,
         hourEnd: (mostActiveHour + 1) % 24,
         day: moment().day(mostActiveDay).format('dddd'),
-        updatedAt: new Date().toISOString(),
+        updatedAt: Timestamp.now(),
       };
 
       // 🔄 Get userIds

@@ -1,7 +1,2 @@
-import { updateAllClients } from './functions/updateClients';
-
-(async () => {
-  console.log('🔄 Running scheduled update...');
-  await updateAllClients();
-  console.log('✅ Done!');
-})();
+// index.ts — empty or basic entry if required
+console.log('🚀 App initialized — no scheduled jobs here.');

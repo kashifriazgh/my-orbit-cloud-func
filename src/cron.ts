@@ -2,7 +2,7 @@ import cron from 'node-cron';
 import { getMostFocusedTime } from './functions/getMostFocusedTime';
 
 // 🕰 Runs every day at 5:52 AM (server time — usually UTC unless set)
-cron.schedule('56 5 * * *', async () => {
+cron.schedule('17 6 * * *', async () => {
   const now = new Date();
   const timeInKarachi = now.toLocaleTimeString('en-PK', {
     timeZone: 'Asia/Karachi',
