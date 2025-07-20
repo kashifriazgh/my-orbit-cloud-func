@@ -1,8 +1,9 @@
+// cron.ts
+
 import cron from 'node-cron';
 import { getMostFocusedTime } from './functions/getMostFocusedTime';
 
-// 🕰 Runs every day at 5:52 AM (server time — usually UTC unless set)
-cron.schedule('17 6 * * *', async () => {
+cron.schedule('25 6 * * *', async () => {
   const now = new Date();
   const timeInKarachi = now.toLocaleTimeString('en-PK', {
     timeZone: 'Asia/Karachi',
@@ -15,7 +16,12 @@ cron.schedule('17 6 * * *', async () => {
 
   try {
     await getMostFocusedTime();
+    console.log('✅ Focused time task completed');
   } catch (err) {
     console.error('🚨 Error running focused time task:', err);
   }
 });
+
+// 👇 Add this to keep the Node.js process alive
+setInterval(() => {}, 1000 * 60 * 60); // Keep process alive for an hour
+console.log('✅ Cron job scheduler initialized and running...');
