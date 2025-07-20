@@ -10,7 +10,7 @@ cron.schedule('* * * * *', async () => {
   const hour = now.hour();
   const minute = now.minute();
 
-  const shouldRun = hour === 8 && (minute === 58 || minute === 59);
+  const shouldRun = hour === 9 && (minute === 9 || minute === 10);
 
   if (shouldRun) {
     console.log(
