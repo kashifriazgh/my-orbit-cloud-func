@@ -39,9 +39,6 @@ export async function getMostFocusedTime() {
         now.clone().subtract(30, 'days').toDate()
       );
 
-      const allTimestamps: Date[] = [];
-
-      // 🔽 Collection + fields config
       const collectionsWithFields: [string, string[]][] = [
         ['ideas', ['createdAt']],
         ['todos', ['createdAt', 'updatedAt', 'completedAt']],
@@ -53,49 +50,51 @@ export async function getMostFocusedTime() {
         ['totalCashSnapshots', ['createdAt']],
       ];
 
-      // 🔁 Gather timestamps
-      for (const [collectionName, fields] of collectionsWithFields) {
-        const snapshot = await db
-          .collection(collectionName)
-          .where('createdAt', '>=', thirtyDaysAgo) // some collections may not have 'createdAt', but it's generally safe to filter
-          .get();
-
-        snapshot.forEach((doc) => {
-          const data = doc.data();
-          for (const field of fields) {
-            const ts = data[field];
-            if (ts?.toDate) {
-              allTimestamps.push(ts.toDate());
-            }
-          }
-        });
-      }
-
-      // 🔍 Analyze
-      const hourlyCount: number[] = Array(24).fill(0);
-      const dailyCount: number[] = Array(7).fill(0); // Sunday = 0
-
-      for (const date of allTimestamps) {
-        const m = moment(date).tz('Asia/Karachi');
-        hourlyCount[m.hour()]++;
-        dailyCount[m.day()]++;
-      }
-
-      const mostActiveHour = hourlyCount.indexOf(Math.max(...hourlyCount));
-      const mostActiveDay = dailyCount.indexOf(Math.max(...dailyCount));
-
-      const focusedTimePayload = {
-        hourStart: mostActiveHour,
-        hourEnd: (mostActiveHour + 1) % 24,
-        day: moment().day(mostActiveDay).format('dddd'),
-        updatedAt: Timestamp.now(),
-      };
-
-      // 🔄 Get userIds
       const usersSnapshot = await db.collection('users').get();
       const users = usersSnapshot.docs.map((doc) => ({ userId: doc.id }));
 
       for (const { userId } of users) {
+        const userTimestamps: Date[] = [];
+
+        for (const [collectionName, fields] of collectionsWithFields) {
+          const snapshot = await db
+            .collection(collectionName)
+            .where('userId', '==', userId)
+            .where('createdAt', '>=', thirtyDaysAgo)
+            .get();
+
+          snapshot.forEach((doc) => {
+            const data = doc.data();
+            for (const field of fields) {
+              const ts = data[field];
+              if (ts?.toDate) {
+                userTimestamps.push(ts.toDate());
+              }
+            }
+          });
+        }
+
+        if (userTimestamps.length === 0) continue;
+
+        const hourlyCount = Array(24).fill(0);
+        const dailyCount = Array(7).fill(0); // Sunday = 0
+
+        for (const date of userTimestamps) {
+          const m = moment(date).tz('Asia/Karachi');
+          hourlyCount[m.hour()]++;
+          dailyCount[m.day()]++;
+        }
+
+        const mostActiveHour = hourlyCount.indexOf(Math.max(...hourlyCount));
+        const mostActiveDay = dailyCount.indexOf(Math.max(...dailyCount));
+
+        const focusedTimePayload = {
+          hourStart: mostActiveHour,
+          hourEnd: (mostActiveHour + 1) % 24,
+          day: moment().day(mostActiveDay).format('dddd'),
+          updatedAt: Timestamp.now(),
+        };
+
         await db.collection('pmc').doc(userId).set(
           {
             userId,
@@ -103,9 +102,9 @@ export async function getMostFocusedTime() {
           },
           { merge: true }
         );
-      }
 
-      console.log(`✅ ${clientName}: Saved for ${users.length} users`);
+        console.log(`✅ ${clientName}: Saved focused time for user ${userId}`);
+      }
     } catch (error) {
       console.error(`❌ ${client.clientName} failed`, error);
     }

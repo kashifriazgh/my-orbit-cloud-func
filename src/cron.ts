@@ -4,13 +4,19 @@ import cron from 'node-cron';
 import moment from 'moment-timezone';
 import { getMostFocusedTime } from './functions/getMostFocusedTime';
 
-// Run every minute to check if it's exactly 6:25 AM PKT
+// Run every minute to check if it's exactly 8:45, 8:46, or 8:47 AM PKT
 cron.schedule('* * * * *', async () => {
   const now = moment().tz('Asia/Karachi');
-  const isTargetTime = now.hour() === 8 && now.minute() === 34;
+  const hour = now.hour();
+  const minute = now.minute();
 
-  if (isTargetTime) {
-    console.log('⏰ It is 6:25 AM PKT — running focused time analysis...');
+  const shouldRun =
+    hour === 8 && (minute === 45 || minute === 46 || minute === 47);
+
+  if (shouldRun) {
+    console.log(
+      `⏰ It is ${now.format('HH:mm')} PKT — running focused time analysis...`
+    );
     try {
       await getMostFocusedTime();
       console.log('✅ Focused time task completed');
@@ -26,5 +32,5 @@ cron.schedule('* * * * *', async () => {
 setInterval(() => {}, 1000 * 60 * 60); // 1 hour
 
 console.log(
-  '✅ Cron job scheduler initialized and watching for 6:25 AM PKT...'
+  '✅ Cron job scheduler initialized and watching for 8:45–8:47 AM PKT...'
 );
